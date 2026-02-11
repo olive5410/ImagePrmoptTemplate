@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - cos-js-sdk-v5
+  - esbuild
+  - sharp
+  - unrs-resolver
+  - workerd
