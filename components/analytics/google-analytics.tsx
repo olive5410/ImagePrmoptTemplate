@@ -12,16 +12,14 @@ declare global {
 
 export default function GoogleAnalytics() {
   const analyticsId = process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID;
+  if (!analyticsId) {
+    return null;
+  }
 
   useEffect(() => {
     // Attach debugGA4 to window for debugging
     if (typeof window !== 'undefined') {
       (window as any).debugGA4 = debugGA4;
-    }
-
-    if (!analyticsId) {
-      console.warn('[GA4] No measurement ID found');
-      return;
     }
 
     if (!analyticsId.startsWith('G-')) {

@@ -52,6 +52,10 @@ export function HomepageEffectsShowcase({ locale }: { locale: string }) {
   const fetchEffects = async () => {
     try {
       const response = await fetch('/api/video-effects')
+      if (!response.ok) {
+        throw new Error(`Failed to fetch effects: ${response.status}`)
+      }
+
       const data = await response.json()
 
       if (data.effect_items) {
@@ -60,6 +64,7 @@ export function HomepageEffectsShowcase({ locale }: { locale: string }) {
       }
     } catch (error) {
       console.error('Failed to fetch effects:', error)
+      setEffects([])
     } finally {
       setLoading(false)
     }

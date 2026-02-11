@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Copy, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -83,7 +83,9 @@ export function PromptHistoryDialog({ open, onOpenChange }: PromptHistoryDialogP
           <div className="flex items-center justify-between pr-8">
             <div>
               <DialogTitle>Prompt History</DialogTitle>
-              <p className="text-sm text-gray-500 mt-1">Maximum 20 items stored locally</p>
+              <DialogDescription className="text-sm text-gray-500 mt-1">
+                Maximum 20 items stored locally
+              </DialogDescription>
             </div>
             <Button
               variant="outline"
