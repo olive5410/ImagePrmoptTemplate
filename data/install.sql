@@ -91,3 +91,63 @@ CREATE INDEX IF NOT EXISTS idx_orders_user_email ON orders(user_email);
 CREATE INDEX IF NOT EXISTS idx_orders_paid_email ON orders(paid_email);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
+
+-- =============================================
+-- Generations Table (Supabase)
+-- =============================================
+CREATE TABLE IF NOT EXISTS generations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    prompt TEXT NOT NULL,
+    result JSONB NOT NULL,
+    user_id UUID REFERENCES auth.users(id) NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_generations_user_id ON generations(user_id);
+CREATE INDEX IF NOT EXISTS idx_generations_created_at ON generations(created_at DESC);
+
+ALTER TABLE generations ENABLE ROW LEVEL SECURITY;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+      AND tablename = 'generations' 
+      AND policyname = 'Users can view their own generations'
+  ) THEN
+    CREATE POLICY "Users can view their own generations" ON generations
+      FOR SELECT USING (auth.uid() = user_id);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+      AND tablename = 'generations' 
+      AND policyname = 'Users can insert their own generations'
+  ) THEN
+    CREATE POLICY "Users can insert their own generations" ON generations
+      FOR INSERT WITH CHECK (auth.uid() = user_id);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+      AND tablename = 'generations' 
+      AND policyname = 'Users can update their own generations'
+  ) THEN
+    CREATE POLICY "Users can update their own generations" ON generations
+      FOR UPDATE USING (auth.uid() = user_id);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies 
+    WHERE schemaname = 'public' 
+      AND tablename = 'generations' 
+      AND policyname = 'Users can delete their own generations'
+  ) THEN
+    CREATE POLICY "Users can delete their own generations" ON generations
+      FOR DELETE USING (auth.uid() = user_id);
+  END IF;
+END
+$$;
