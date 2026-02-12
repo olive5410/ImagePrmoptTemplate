@@ -16,7 +16,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { prompt, size = 'auto', quality = '2K', image_urls } = body;
+    const {
+      prompt,
+      size = 'auto',
+      quality = '2K',
+      image_urls,
+      model = process.env.EVOLINK_MODEL || 'gemini-3-pro-image-preview',
+      callback_url,
+    } = body;
 
     log('[Evolink Generate] 收到请求:', {
       user: session.user.email,
@@ -27,14 +34,18 @@ export async function POST(request: NextRequest) {
     });
 
     const requestBody: Record<string, any> = {
-      model: 'nano-banana-2-lite',
+      model,
       prompt,
       size,
-      quality
+      quality,
     };
 
     if (image_urls && image_urls.length > 0) {
       requestBody.image_urls = image_urls;
+    }
+
+    if (callback_url) {
+      requestBody.callback_url = callback_url;
     }
 
     log('[Evolink Generate] 调用 Evolink API:', requestBody);
